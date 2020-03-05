@@ -157,26 +157,26 @@ namespace GradeBook.Tests
             return 3; 
         }
 
-        void GetSetNameByRef(ref Book book, String name){
+        void GetSetNameByRef(ref InMemoryBook book, String name){
 
-        book = new Book(name);            
-
-        }
-
-        void GetBookSetName(Book book, String name){
-
-            book = new Book(name);
+        book = new InMemoryBook(name);            
 
         }
-        void SetName(Book book, String name){
+
+        void GetBookSetName(InMemoryBook book, String name){
+
+            book = new InMemoryBook(name);
+
+        }
+        void SetName(InMemoryBook book, String name){
 
             book.Name = name; 
 
         }
 
-        Book GetBook(String name){
+        InMemoryBook GetBook(String name){
 
-            return new Book(name);
+            return new InMemoryBook(name);
 
         }
     }

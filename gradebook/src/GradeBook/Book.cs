@@ -5,7 +5,18 @@ using System.Collections.Generic;
 namespace GradeBook{
     public delegate void GradeAddedDelegate(object sender, EventArgs args);
 
-    public class Book : NamedObject
+
+    public abstract class Book : NamedObject
+    {
+        public Book(string name) : base(name)
+        {
+        }
+
+        public abstract void AddGrade(double grade);
+
+    }
+
+    public class InMemoryBook : Book
     {
         List <double> grades;
         //This is long hand property
@@ -15,12 +26,12 @@ namespace GradeBook{
         // }
       
         const string category = "test"; 
-        public Book(string name) : base(name)
+        public InMemoryBook(string name) : base(name)
         {
             grades = new List<double>();
             Name = name;
         }
-        public void AddGrade(double grade){
+        public override void AddGrade(double grade){
             if (grade >= 0.0 && grade <= 100.0){
                 grades.Add(grade);    
                 if (GradeAdded != null){
@@ -28,7 +39,7 @@ namespace GradeBook{
                 }
             }
             else{
-                throw new ArgumentException($"Invalid {nameof(grade)}");
+                throw new ArgumentException($"Invalids {nameof(grade)}");
             }   
         }
         public event GradeAddedDelegate GradeAdded; // This is just a fieldin this class
