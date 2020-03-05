@@ -8,12 +8,25 @@ namespace GradeBook
 
         static void Main(string[] args) //this is a method main
         {   
-            var book = new InMemoryBook("Science Class");
-            book.GradeAdded += OnGradeAdded; 
+            // var book = new InMemoryBook("Science Class");
+            // book.GradeAdded += OnGradeAdded; 
     
-            AddValuesByUser(book);
-            Console.WriteLine($"For the book names {book.Name}"); 
-            book.ShowStats();
+            // AddValuesByUser(book);
+            // Console.WriteLine($"For the book names {book.Name}"); 
+            // book.ShowStats();
+
+
+             IBook bookDisc = new DiskBook ("Disk Book");
+             bookDisc.GradeAdded += OnGradeAdded;
+             AddValuesByUser(bookDisc);
+             bookDisc.ShowStats();
+
+
+             
+             
+             //bookDisc.Sh
+
+
 
             
         }
@@ -48,7 +61,7 @@ namespace GradeBook
             Console.WriteLine(stringInterpolationExample);
         }
     
-    static void  AddValuesByUser(InMemoryBook book){
+    static void  AddValuesByUser(IBook book){
         Console.WriteLine("Please type in a value then press eneter."); 
         var input = Console.ReadLine(); 
         

@@ -1,19 +1,83 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 
 namespace GradeBook{
     public delegate void GradeAddedDelegate(object sender, EventArgs args);
 
+    public interface IBook
+    {
+        void AddGrade (double grade);
+        Statistics GetStatistics();
+        string Name {get;}
+        event GradeAddedDelegate GradeAdded; 
 
-    public abstract class Book : NamedObject
+        void ShowStats();
+    }
+    public abstract class Book : NamedObject, IBook
     {
         public Book(string name) : base(name)
         {
         }
 
+        public abstract event GradeAddedDelegate GradeAdded;
+
         public abstract void AddGrade(double grade);
 
+        public abstract Statistics GetStatistics();
+
+        public abstract void ShowStats();
+    }
+
+
+
+    public class DiskBook : Book
+    {
+        public DiskBook(string name) : base(name)
+        {
+        }
+
+        public override event GradeAddedDelegate GradeAdded;
+
+        public override void AddGrade(double grade)
+        {
+            var filePath = $"{Name}.txt";
+            using( var sw = File.AppendText(filePath)){
+
+                sw.WriteLine(grade);
+                if(GradeAdded != null){
+                    GradeAdded(this, new EventArgs());
+                }
+
+            }
+        }
+
+        public override Statistics GetStatistics()
+        {
+            var result = new Statistics();
+
+            string[] text = File.ReadAllLines($"{Name}.txt");
+            
+
+            foreach(string line in text){
+                result.Add(double.Parse(line));
+            }
+
+            return result;
+            
+        }
+
+         public override void ShowStats(){
+
+            var results = GetStatistics();
+
+            Console.WriteLine($"Average: {results.Average}"); 
+            Console.WriteLine($"Highest: {results.high}");
+            Console.WriteLine($"Lowest: {results.low}");
+            Console.WriteLine($"Average: {results.letter}");
+
+        }
     }
 
     public class InMemoryBook : Book
@@ -39,10 +103,10 @@ namespace GradeBook{
                 }
             }
             else{
-                throw new ArgumentException($"Invalids {nameof(grade)}");
+                throw new ArgumentException($"IIInvalids {nameof(grade)}");
             }   
         }
-        public event GradeAddedDelegate GradeAdded; // This is just a fieldin this class
+        public override event GradeAddedDelegate GradeAdded; // This is just a fieldin this class
 
         public double GetHighestGrade (){
             double highestGrade = double.MinValue; 
@@ -76,7 +140,7 @@ namespace GradeBook{
             return lowestGrade;
         }
 
-        public void ShowStats(){
+        public override void ShowStats(){
 
             var results = GetStatistics();
 
@@ -87,14 +151,13 @@ namespace GradeBook{
 
         }
 
-        public Statistics GetStatistics(){
+        public override Statistics GetStatistics(){
 
             Statistics results = new Statistics();
-
-            results.Average = GetAverageGrade();
-            results.high = GetHighestGrade();
-            results.low = GetLowestGrade();
-            results.letter = AddLetterGrade(results.Average); 
+            
+            for(var index = 0; index < grades.Count; index++){
+                results.Add(grades[index]);
+            }
 
             return results; 
 
